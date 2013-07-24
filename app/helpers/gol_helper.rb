@@ -1,0 +1,2 @@
+module GolHelper
+end
