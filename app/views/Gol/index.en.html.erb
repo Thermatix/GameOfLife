@@ -1,22 +1,15 @@
-<h1> Conway's game of life! on ruby on rails</h1> 
-
 <table border="1">
-
 <% for x in 0..@colmns - 1 %>
 	<tr>
 		<% for y in 0..@rows - 1 %>
-		
 			<td>
 				<% if @stack.grid(x,y) == 0 %>
 					<%=image_tag("Dead.jpg") %>
 				<%else %>
 					<%=image_tag("Alive.jpg") %>
 				<%end%>
-			</td>
-	
+			</td>	
 		<% end %>
 	</tr>
 <% end %>
- 
-
-</table>
+ </table>

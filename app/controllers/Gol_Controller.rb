@@ -10,11 +10,12 @@ class GolController < ActionController::Base
 		@rows = 20
 		@colmns = 20
 		@stack = Stack.new(@rows,@colmns)    
+		@stack.StepForward()
+			
+		
+		
 
-		#@stack.SaveGrid()
-		@stack.PullGrid()
-
-		  	 #Main program update loop
+		  	 
 	end
 
 
