@@ -1,11 +1,7 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
 one:
-  alive: false
-  x: 1
-  'y': 1
+  cellstates: MyString
 
 two:
-  alive: false
-  x: 1
-  'y': 1
+  cellstates: MyString

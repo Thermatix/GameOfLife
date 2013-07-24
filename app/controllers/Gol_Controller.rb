@@ -7,15 +7,11 @@ class GolController < ActionController::Base
   protect_from_forgery with: :exception
   
 	def index
-		@rows = 20
-		@colmns = 20
+		@rows = 30
+		@colmns = 30
 		@stack = Stack.new(@rows,@colmns)    
 		@stack.StepForward()
-			
-		
-		
 
-		  	 
 	end
 
 

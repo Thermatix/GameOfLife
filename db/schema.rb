@@ -11,12 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130723163444) do
+ActiveRecord::Schema.define(version: 20130724150111) do
 
-  create_table "cells", force: true do |t|
-    t.boolean  "alive"
-    t.integer  "x"
-    t.integer  "y"
+  create_table "Cells", force: true do |t|
+    t.string   "cellstates"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

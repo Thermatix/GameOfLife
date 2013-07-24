@@ -77,46 +77,39 @@ class Stack
 	
 	def SaveGrid #stores grid to the database
 		Cells.delete_all
-	
+		savestring = ""
 		for x in 0..@yc - 1
 			for y in 0..@xr - 1
 
 					if @grid[x][y] == 1
-			       		cellstate = true
+			       		savestring += "1"
 			   		else
-			   			cellstate = false
+			   			savestring += "0"
 			   		end
-				gridsave = Cells.new(:alive => cellstate, :x => x, :y => y)
-			       gridsave.save!
+				
 
 
 			       
 			 end
-		end
 		
-   
+
+			 
+		end
+		Rails.logger.debug savestring
+   		gridsave = Cells.new(:cellstates =>  savestring)
+		gridsave.save!
 	end
 
 	def PullGrid #pulls grid from the database returns false if no data is in the database, true if there is
-		
-		
-			for x in 0..@yc - 1
-				for y in 0..@xr - 1
-
-					c = Cells.where("x = ? AND y = ?",x,y).take()
-					if c != nil
-						if c.alive
-							@grid[x][y] = 1
-						else
-							@grid[x][y] = 0
-						end
-					else
-					return false
-					end
+		c = Cells.take()
+		return false if c == nil
+			for x in 0..@xr - 1
+				for y in 0..@yc - 1
+					Rails.logger.debug c
+					@grid[x][y] = c.cellstates[(x*@xr) + y].to_i
 				end
 			end
-					
-			return true		
+		return true		
 	end
 
 	
