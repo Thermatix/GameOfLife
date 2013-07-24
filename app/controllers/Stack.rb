@@ -1,64 +1,80 @@
-class Stack# < ActionController::Base
+class Stack
 
+	#alive cells = 1, dead cells = 0
 
-#before_filter :GridBlankCheck, :only => [:InitGrid]
-
-
-	
-	def initialize(rows, colmns)
+	def initialize(rows, colmns) #sets up object 
 		@xr = rows
 		@yc = colmns
+		@gridInit = false
+		GridCheck()
+		@grid = Array.new(@xr) {Array.new(@yc) {rand(2)}} if !@gridInit #if there is no database grid it creates a new one and seeds it
 		
-		@grid = Array.new(@xr) {Array.new(@yc) {rand(2)}} if !@gridInit
-		@gridInit = true
-		@gridstep = Array.new(@xr) {Array.new(@yc) {0}}
+		@gridstep = Array.new(@xr) {Array.new(@yc) {0}} #creates working grid
 	
+	end
+
+	def GridCheck #checks to see if the database has data in it
+		@gridthere = true
+		@grid = Array.new(@xr) {Array.new(@yc)}
+		@gridthere = PullGrid()	 
+		if @gridthere
+			@gridInit = true
+		else
+			@gridInit = false
+		end
+
 
 
 	end
+
 	def grid(x,y)
 
-		return @grid[x][y]
+		return @grid[x][y] #accessor for grid array
 	end
 
 	def StepForward
+		#copies data from the database and puts it into the working grid
 		PullGrid()
 		Rails.logger.debug "copying data -SF1"
 		for x in 0..@yc - 1
 				for y in 0..@xr - 1
 			@gridstep[x][y] = @grid[x][y]
-			Rails.logger.debug "row:#{x}"; Rails.logger.debug "column:#{y}"; Rails.logger.debug "value:#{@gridstep[x][y]}" 
+			#Rails.logger.debug "row:#{x}"; Rails.logger.debug "column:#{y}"; Rails.logger.debug "value:#{@gridstep[x][y]}" 
 			end
 		end
-
+		for x in 0..@yc - 1
+			Rails.logger.debug @gridstep[x]
+		end 
 		cellTally = 0
+		#performs rule checks for each cell
 		Rails.logger.debug "tallying cells -SF2"
 		for x in 0..@yc - 1
-			Rails.logger.debug "row:#{x}"
 			for y in 0..@xr - 1
-				Rails.logger.debug "column:#{y}"
-				Rails.logger.debug "Before Tally Value:#{@gridstep[x][y]}"
 				cellTally = TallyCheck(x,y)
-				Rails.logger.debug "Tally count:#{cellTally}"
 				@gridstep[x][y] = 0 if cellTally < 2
 				@gridstep[x][y] = 0 if cellTally > 3
-				@gridStep[x][y] = 1 if cellTally == 3
-				Rails.logger.debug "After tally Result:#{@gridstep[x][y]}"
+				@gridstep[x][y] = 1 if cellTally == 3
 			end
 		end
+		for x in 0..@yc - 1
+			Rails.logger.debug @gridstep[x]
+		end 
 		Rails.logger.debug "moving data back to grid -SF3"
 		for x in 0..@yc - 1
 				for y in 0..@xr - 1
 			@grid[x][y] = @gridstep[x][y]
-			Rails.logger.debug "row:#{x}"; Rails.logger.debug "column:#{y}"; Rails.logger.debug "value:#{@grid[x][y]}" 
+		#	Rails.logger.debug "row:#{x}"; Rails.logger.debug "column:#{y}"; Rails.logger.debug "value:#{@grid[x][y]}" 
 			end
 		end
+		for x in 0..@yc - 1
+			Rails.logger.debug @grid[x]
+		end 
 		Rails.logger.debug "Saving grid -SF4"
 		SaveGrid()
 	end	
 	
-	def SaveGrid
-
+	def SaveGrid #stores grid to the database
+		Cells.delete_all
 	
 		for x in 0..@yc - 1
 			for y in 0..@xr - 1
@@ -68,7 +84,7 @@ class Stack# < ActionController::Base
 			   		else
 			   			cellstate = false
 			   		end
-					gridsave = Cells.new(:alive => cellstate, :x => x, :y => y)
+				gridsave = Cells.new(:alive => cellstate, :x => x, :y => y)
 			       gridsave.save!
 
 
@@ -79,40 +95,41 @@ class Stack# < ActionController::Base
    
 	end
 
-	def PullGrid
+	def PullGrid #pulls grid from the database returns false if no data is in the database, true if there is
+		
 		
 			for x in 0..@yc - 1
 				for y in 0..@xr - 1
 
-					
-
-				if Cells.where("x = ? AND y = ?",x,y).take().alive
-					@grid[x][y] = 1
-				else
-					@grid[x][y] = 0
-				end
-
-
-				
-
+					c = Cells.where("x = ? AND y = ?",x,y).take()
+					if c != nil
+						if c.alive
+							@grid[x][y] = 1
+						else
+							@grid[x][y] = 0
+						end
+					else
+					return false
+					end
 				end
 			end
-
-		end
+					
+			return true		
+	end
 
 	
 
-	def TallyCheck(x,y)
+	def TallyCheck(x,y) #tallys up alive(1) cells around the one it's looking at and returns the amount
 		tally = 0
-		tally + 1 if x > 0 && @gridstep[x - 1][y] == 1 
-		tally + 1 if x <  @xr - 1 && @gridstep[x + 1][y] == 1
-		tally + 1 if y > 0 && @gridstep[x][y - 1] == 1
-		tally + 1 if y < @yc - 1 && @gridstep[x][y + 1] == 1 
-		tally + 1 if x < @xr - 1 && y < @yc - 1 && @gridstep[x + 1][y + 1] == 1 
-		tally + 1 if x > 0 && y > 0 && @gridstep[x - 1][y - 1] == 1 
-		tally + 1 if x > 0 && y < @yc - 1 && @gridstep[x - 1][y + 1] == 1 
-		tally + 1 if x < @xr - 1 && y > 0 && @gridstep[x + 1][y - 1] == 1 
-		Rails.logger.debug "tally check:#{tally}"
+		tally += 1 if x > 0 && @gridstep[x - 1][y] == 1 
+		tally += 1 if x <  @xr - 1 && @gridstep[x + 1][y] == 1
+		tally += 1 if y > 0 && @gridstep[x][y - 1] == 1
+		tally += 1 if y < @yc - 1 && @gridstep[x][y + 1] == 1 
+		tally += 1 if x < @xr - 1 && y < @yc - 1 && @gridstep[x + 1][y + 1] == 1 
+		tally += 1 if x > 0 && y > 0 && @gridstep[x - 1][y - 1] == 1 
+		tally += 1 if x > 0 && y < @yc - 1 && @gridstep[x - 1][y + 1] == 1 
+		tally += 1 if x < @xr - 1 && y > 0 && @gridstep[x + 1][y - 1] == 1 
 		return tally
 	end
+
 end

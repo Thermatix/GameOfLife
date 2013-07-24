@@ -1,15 +1,29 @@
-<table border="1">
-<% for x in 0..@colmns - 1 %>
-	<tr>
-		<% for y in 0..@rows - 1 %>
-			<td>
-				<% if @stack.grid(x,y) == 0 %>
-					<%=image_tag("Dead.jpg") %>
-				<%else %>
-					<%=image_tag("Alive.jpg") %>
-				<%end%>
-			</td>	
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GameOfLife</title>
+  <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+  <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+  <%= csrf_meta_tags %>
+  <meta http-equiv="refresh" content="1">
+</head>
+	<body>
+		<h1> Conway's game of life! on ruby on rails</h1> 
+		<table border="1">
+		<% for x in 0..@colmns - 1 %>
+			<tr>
+				<% for y in 0..@rows - 1 %>
+					<td>
+						<% if @stack.grid(x,y) == 0 %>
+							<%=image_tag("Dead.jpg")%>
+						<%else %>
+							<%=image_tag("Alive.jpg")%>
+						<%end%>
+					</td>	
+				<% end %>
+			</tr>
 		<% end %>
-	</tr>
-<% end %>
- </table>
+		 </table>
+	</body>
