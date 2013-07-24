@@ -46,7 +46,7 @@ class Stack
 			Rails.logger.debug @gridstep[x]
 		end 
 		cellTally = 0
-		#performs rule checks for each cell
+		#performs rule checks for each cell and modifies them accourdingly
 		Rails.logger.debug "tallying cells -SF2"
 		for x in 0..@yc - 1
 			for y in 0..@xr - 1
@@ -59,6 +59,7 @@ class Stack
 		for x in 0..@yc - 1
 			Rails.logger.debug @gridstep[x]
 		end 
+		#moves data from working grid back to main grid
 		Rails.logger.debug "moving data back to grid -SF3"
 		for x in 0..@yc - 1
 				for y in 0..@xr - 1
@@ -69,6 +70,7 @@ class Stack
 		for x in 0..@yc - 1
 			Rails.logger.debug @grid[x]
 		end 
+		#saves the grid to the database
 		Rails.logger.debug "Saving grid -SF4"
 		SaveGrid()
 	end	
