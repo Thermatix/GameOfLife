@@ -10,7 +10,7 @@ class SessionControl < ActionController:Helpers
 	end
 
 	def Id
-		return cookies[:id].value
+		#return @session_id
 		return cookies[:id].value
 	end
 
