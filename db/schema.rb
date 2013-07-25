@@ -11,9 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130724150111) do
+ActiveRecord::Schema.define(version: 20130724155951) do
 
-  create_table "Cells", force: true do |t|
+  create_table "cells", force: true do |t|
+    t.string   "sessionid"
     t.string   "cellstates"
     t.datetime "created_at"
     t.datetime "updated_at"

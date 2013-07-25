@@ -2,7 +2,8 @@ class Stack
 
 	#alive cells = 1, dead cells = 0
 
-	def initialize(rows, colmns) #sets up object 
+	def initialize(rows, colmns, id) #sets up object 
+		#Cells.delete_all
 		@xr = rows
 		@yc = colmns
 		@gridInit = false
@@ -10,7 +11,7 @@ class Stack
 		@grid = Array.new(@xr) {Array.new(@yc) {rand(2)}} if !@gridInit #if there is no database grid it creates a new one and seeds it
 		
 		@gridstep = Array.new(@xr) {Array.new(@yc) {0}} #creates working grid
-	
+		@id = id
 	end
 
 	def GridCheck #checks to see if the database has data in it
@@ -76,7 +77,7 @@ class Stack
 	end	
 	
 	def SaveGrid #stores grid to the database
-		Cells.delete_all
+		
 		savestring = ""
 		for x in 0..@yc - 1
 			for y in 0..@xr - 1
@@ -96,12 +97,13 @@ class Stack
 			 
 		end
 		Rails.logger.debug savestring
-   		gridsave = Cells.new(:cellstates =>  savestring)
+   		gridsave = Cells.find_by_sessionid(@id)
+   		gridsave.cellstates =  savestring; gridsave.sessionid = id
 		gridsave.save!
 	end
 
 	def PullGrid #pulls grid from the database returns false if no data is in the database, true if there is
-		c = Cells.take()
+		c = Cells.where.(sessionid = @id).take()
 		return false if c == nil
 			for x in 0..@xr - 1
 				for y in 0..@yc - 1
