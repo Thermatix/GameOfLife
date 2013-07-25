@@ -7,8 +7,7 @@ group :development do
   gem 'sqlite3', '1.3.7'
 end
 
-# Use sqlite3 as the database for Active Record
-gem 'sqlite3'
+# Use sqlite3 as the database for Active Recordß
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'
@@ -20,7 +19,7 @@ gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.0.0'
 
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
-gem 'therubyracer', platforms: :ruby
+#gem 'therubyracer', platforms: :ruby
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
@@ -37,7 +36,7 @@ gem 'narray'
 #for debugging
 gem 'debugger'
 
-gem ’rb-readline’
+gem 'rb-readline'
 
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
