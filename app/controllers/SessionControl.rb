@@ -11,6 +11,7 @@ class SessionControl < ActionController:Helpers
 
 	def Id
 		return cookies[:id].value
+		return cookies[:id].value
 	end
 
 end
