@@ -15,7 +15,6 @@ class Stack
 	end
 
 	def GridCheck #checks to see if the database has data in it
-		@gridthere = true
 		@grid = Array.new(@xr) {Array.new(@yc)}
 		@gridthere = PullGrid()	 
 		if @gridthere
@@ -44,6 +43,7 @@ class Stack
 			end
 		end
 		for x in 0..@yc - 1
+			Rails.logger.debug "R#{x}:"
 			Rails.logger.debug @gridstep[x]
 		end 
 		cellTally = 0
@@ -58,6 +58,7 @@ class Stack
 			end
 		end
 		for x in 0..@yc - 1
+			Rails.logger.debug "R#{x}:"
 			Rails.logger.debug @gridstep[x]
 		end 
 		#moves data from working grid back to main grid
@@ -68,7 +69,9 @@ class Stack
 		#	Rails.logger.debug "row:#{x}"; Rails.logger.debug "column:#{y}"; Rails.logger.debug "value:#{@grid[x][y]}" 
 			end
 		end
+
 		for x in 0..@yc - 1
+			Rails.logger.debug "R#{x}:"
 			Rails.logger.debug @grid[x]
 		end 
 		#saves the grid to the database
@@ -78,14 +81,14 @@ class Stack
 	
 	def SaveGrid #stores grid to the database
 		
-		savestring = ""
+		write_buffer = ""
 		for x in 0..@yc - 1
 			for y in 0..@xr - 1
 
 					if @grid[x][y] == 1
-			       		savestring += "1"
+			       		write_buffer += "1"
 			   		else
-			   			savestring += "0"
+			   			write_buffer += "0"
 			   		end
 				
 
@@ -96,19 +99,20 @@ class Stack
 
 			 
 		end
-		Rails.logger.debug savestring
+		Rails.logger.debug write_buffer
    		gridsave = Cells.find_by_sessionid(@id)
-   		gridsave.cellstates =  savestring; gridsave.sessionid = id
+   		gridsave.cellstates =  write_buffer; gridsave.sessionid = @id
 		gridsave.save!
 	end
 
-	def PullGrid #pulls grid from the database returns false if no data is in the database, true if there is
-		c = Cells.where.(sessionid = @id).take()
-		return false if c == nil
+	def PullGrid #pulls grid from the database, returns false if no data is in the database, true if there is
+		read_buffer = Cells.where.(sessionid = @id).take()
+		return false if read_buffer == nil
+			read_buffer = read_buffer.cellstates
 			for x in 0..@xr - 1
 				for y in 0..@yc - 1
-					Rails.logger.debug c
-					@grid[x][y] = c.cellstates[(x*@xr) + y].to_i
+					Rails.logger.debug read_buffer
+					@grid[x][y] = read_buffer[(x*@xr) + y].to_i
 				end
 			end
 		return true		
